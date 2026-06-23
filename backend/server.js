@@ -7,6 +7,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 const symptomsRoutes = require("./routes/symptomsRoutes");
 const cycleRoutes = require("./routes/cycleRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use("/api/auth", authRoutes);
 
 //Attach all routes from loginRoutes under the prefix /api/auth
 app.use("/api/auth", loginRoutes);
+
+//Onboarding screen
+app.use("/api/users", userRoutes);
 
 //Attach all routes from symptomRoutes under the prefix /api/symptoms
 app.use("/api/symptoms", symptomsRoutes);
