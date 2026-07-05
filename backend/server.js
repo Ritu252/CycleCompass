@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -7,10 +8,11 @@ const authMiddleware = require("./middleware/authMiddleware");
 const symptomsRoutes = require("./routes/symptomsRoutes");
 const cycleRoutes = require("./routes/cycleRoutes");
 const reportRoutes = require("./routes/reportRoutes");
-const userRoutes = require("./routes/userRoutes");
+const onboardRoutes = require("./routes/onboardRoutes");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 //Attach all routes from authRoutes under the prefix /api/auth
@@ -20,7 +22,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/auth", loginRoutes);
 
 //Onboarding screen
-app.use("/api/users", userRoutes);
+app.use("/api/onboard", onboardRoutes);
 
 //Attach all routes from symptomRoutes under the prefix /api/symptoms
 app.use("/api/symptoms", symptomsRoutes);

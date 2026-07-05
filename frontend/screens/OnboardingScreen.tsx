@@ -9,21 +9,44 @@ import {
 } from "react-native";
 
 import PhoneFrame from "../components/PhoneFrame";
+import api from "../services/api";
 
 export default function OnboardingScreen() {
   const [age, setAge] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
-  const [pcosStatus, setPcosStatus] = useState("");
+  const [pcos_status, setPcosStatus] = useState("");
 
-  const handleContinue = () => {
-    console.log({
-      age,
-      height,
-      weight,
-      pcosStatus,
+  const handleOnboard = async () => {
+  try {
+    const response = await api.post("/api/onboard/profile:id", {
+      age, 
+      height, 
+      weight, 
+      pcos_status,
     });
-  };
+
+    alert(response.data.message);
+
+    console.log("Onboard Success:");
+    console.log(response.data);
+
+    // Optional: clear inputs after successful registration
+    setAge("");
+    setHeight("");
+    setWeight("");
+    setPcosStatus("");
+
+    } catch (error: any) {
+      console.log("Error:");
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Onboard Failed"
+      );
+    }
+};
 
   return (
     <PhoneFrame>
@@ -83,7 +106,7 @@ export default function OnboardingScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            pcosStatus === "Diagnosed" &&
+            pcos_status === "Diagnosed" &&
               styles.selectedOption,
           ]}
           onPress={() =>
@@ -96,7 +119,7 @@ export default function OnboardingScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            pcosStatus === "Not Diagnosed" &&
+            pcos_status === "Not Diagnosed" &&
               styles.selectedOption,
           ]}
           onPress={() =>
@@ -109,7 +132,7 @@ export default function OnboardingScreen() {
         <TouchableOpacity
           style={[
             styles.option,
-            pcosStatus === "Not Sure" &&
+            pcos_status === "Not Sure" &&
               styles.selectedOption,
           ]}
           onPress={() =>
@@ -121,7 +144,7 @@ export default function OnboardingScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={handleContinue}
+          onPress={handleOnboard}
         >
           <Text style={styles.buttonText}>
              Continue

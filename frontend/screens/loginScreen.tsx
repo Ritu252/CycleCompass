@@ -11,18 +11,46 @@ import {
 
 import { LinearGradient } from "expo-linear-gradient";
 import PhoneFrame from "../components/PhoneFrame";
+import api from "../services/api"
 
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log({
+  const handleLogin = async () => {
+  try {
+    const response = await api.post("/api/auth/login", {
       email,
       password,
     });
-  };
+
+    console.log("Login Success:");
+    console.log(response.data);
+
+    alert(response.data.message);
+
+    // Later we'll save this token using AsyncStorage
+    // const token = response.data.token;
+    // await AsyncStorage.setItem("token", token);
+
+    const token = response.data.token;
+    console.log(token);
+
+    // Clear fields
+    setEmail("");
+    setPassword("");
+
+  } catch (error: any) {
+    console.log("Login Error:");
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Login Failed"
+    );
+  }
+};
 
   return (
     <PhoneFrame>

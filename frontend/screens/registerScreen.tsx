@@ -11,19 +11,46 @@ import {
 
 import { LinearGradient } from "expo-linear-gradient";
 import PhoneFrame from "../components/PhoneFrame";
+import api from "../services/api";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
-    console.log({
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);  
+
+  const handleRegister = async () => {
+  try {
+    const response = await api.post("/api/auth/register", {
       name,
       email,
       password,
     });
-  };
+
+    setMessage(response.data.message);
+    setIsError(false);
+
+    console.log("Registration Success:");
+    console.log(response.data);
+
+    // Optional: clear inputs after successful registration
+    setName("");
+    setEmail("");
+    setPassword("");
+    } catch (error: any) {
+      console.log("Registration Error:");
+      console.log(error);
+
+      setMessage(
+          error.response?.data?.message ||
+          "Registration Failed"
+          );
+
+          setIsError(true);
+    }
+};
 
   return (
     
@@ -78,6 +105,21 @@ export default function RegisterScreen() {
             onChangeText={setPassword}
           />
 
+          {
+          message ? (
+              <Text
+                style={[
+                  styles.message,
+                  isError
+                    ? styles.errorMessage
+                    : styles.successMessage,
+                ]}
+              >
+                {message}
+              </Text>
+            ) : null
+          }
+
           <TouchableOpacity onPress={handleRegister}>
             <LinearGradient
               colors={["#FF9BC9", "#FF5EA8"]}
@@ -93,6 +135,7 @@ export default function RegisterScreen() {
             Already have an account?
             <Text style={styles.login}> Login</Text>
           </Text>
+
         </View>
       </View>
     </SafeAreaView>
@@ -236,5 +279,19 @@ const styles = StyleSheet.create({
     color: "#FF5EA8",
 
     fontWeight: "700",
+  },
+
+    message: {
+    textAlign: "center",
+    marginBottom: 15,
+    fontWeight: "600",
+  },
+
+  successMessage: {
+    color: "#28A745",
+  },
+
+  errorMessage: {
+    color: "#FF4D6D",
   },
 });

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import PhoneFrame from "../components/PhoneFrame";
+import api from "../services/api"
 
 export default function DailyCheckInScreen() {
   const [isPeriodDay, setIsPeriodDay] = useState(false);
@@ -37,18 +38,63 @@ export default function DailyCheckInScreen() {
     });
   };
 
-  const handleSave = () => {
-    console.log({
-      isPeriodDay,
-      periodDay,
-      flow,
+  const handleDailyCheckIn = async () => {
+  try {
+    // Save Cycle Data
+    const cycleResponse = await api.post("/api/cycle", {
+      is_period_day: isPeriodDay,
+      period_day: isPeriodDay ? Number(periodDay) : null,
+      flow: isPeriodDay ? flow : null,
+    });
+
+    // Save Symptoms Data
+    const symptomResponse = await api.post("api/symptoms", {
+      acne: symptoms.acne,
+      hair_fall: symptoms.hairFall,
+      bloating: symptoms.bloating,
+      facial_hair_growth: symptoms.facialHairGrowth,
+      cravings: symptoms.cravings,
       mood,
-      energyLevel,
-      weight,
-      symptoms,
+      energy_level: energyLevel,
+      weight: weight ? Number(weight) : null,
       notes,
     });
-  };
+
+    console.log(cycleResponse.data);
+    console.log(symptomResponse.data);
+
+    alert("Daily Check-In Saved Successfully!");
+
+    // Reset cycle data
+    setIsPeriodDay(false);
+    setPeriodDay("");
+    setFlow("");
+
+    // Reset symptom data
+    setSymptoms({
+      acne: false,
+      hairFall: false,
+      bloating: false,
+      facialHairGrowth: false,
+      cravings: false,
+    });
+
+    // Reset remaining fields
+    setMood("");
+    setEnergyLevel("");
+    setWeight("");
+    setNotes("");
+
+  } catch (error: any) {
+    console.log("Daily Check-In Error:");
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Daily Check-In Failed"
+    );
+  }
+};
 
   return (
     <PhoneFrame>
@@ -259,7 +305,7 @@ export default function DailyCheckInScreen() {
 
         <TouchableOpacity
           style={styles.saveButton}
-          onPress={handleSave}
+          onPress={handleDailyCheckIn}
         >
           <Text style={styles.saveButtonText}>
             💕 Save Check-In

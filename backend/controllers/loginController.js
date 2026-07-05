@@ -35,7 +35,7 @@ const login = (req, res) => {
 
         const token = jwt.sign({
                 userId :  results[0].id,
-                email : results[0].emal
+                email : results[0].email
             },
             "theSecretKi",
             {
