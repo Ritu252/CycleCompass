@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import PhoneFrame from "../components/PhoneFrame";
 import api from "../services/api";
+import { useNavigation } from "@react-navigation/native";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -30,8 +31,10 @@ export default function RegisterScreen() {
     });
 
     setMessage(response.data.message);
+    navigation.navigate("Login");
+    
     setIsError(false);
-
+    
     console.log("Registration Success:");
     console.log(response.data);
 
@@ -51,6 +54,8 @@ export default function RegisterScreen() {
           setIsError(true);
     }
 };
+
+  const navigation = useNavigation<any>();
 
   return (
     
@@ -133,8 +138,15 @@ export default function RegisterScreen() {
 
           <Text style={styles.footer}>
             Already have an account?
-            <Text style={styles.login}> Login</Text>
+
+            <Text
+              style={styles.login}
+              onPress={() => navigation.navigate("Login")}
+            >
+            {" "}Login
           </Text>
+
+</Text>
 
         </View>
       </View>

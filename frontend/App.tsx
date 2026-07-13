@@ -1,22 +1,18 @@
-import RegisterScreen from "./screens/registerScreen";
-import LoginScreen from "./screens/loginScreen";
-import DailyCheckInScreen from "./screens/DailyCheckInScreen";
-import OnboardingScreen from "./screens/OnboardingScreen";
+// import RegisterScreen from "./screens/registerScreen";
+// import LoginScreen from "./screens/loginScreen";
+// import DailyCheckInScreen from "./screens/DailyCheckInScreen";
+// import OnboardingScreen from "./screens/OnboardingScreen";
 
 
 
-// export default function App() {
-//   return <RegisterScreen />;
-// }
+// import AppNavigator from "./navigation/AppNavigator";
 
 // export default function App() {
-//   return <LoginScreen />;
+//   return <AppNavigator />;
 // }
 
-// export default function App() {
-//   return <DailyCheckInScreen />;
-// }
+import Dashboard from "./screens/DashboardScreen";
 
 export default function App() {
-  return <OnboardingScreen />;
+  return <Dashboard />;
 }

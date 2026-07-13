@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import PhoneFrame from "../components/PhoneFrame";
 import api from "../services/api"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function LoginScreen() {
@@ -24,6 +25,21 @@ export default function LoginScreen() {
       email,
       password,
     });
+
+    await AsyncStorage.setItem(
+        "token",
+        response.data.token
+    );
+
+    await AsyncStorage.setItem(
+        "name",
+        response.data.user.name
+    );
+
+    await AsyncStorage.setItem(
+        "email",
+        response.data.user.email
+    );
 
     console.log("Login Success:");
     console.log(response.data);
