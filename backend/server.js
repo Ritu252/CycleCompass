@@ -9,6 +9,7 @@ const symptomsRoutes = require("./routes/symptomsRoutes");
 const cycleRoutes = require("./routes/cycleRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const onboardRoutes = require("./routes/onboardRoutes");
+const journalRoutes = require("./routes/journalRoutes");
 
 const app = express();
 
@@ -32,6 +33,9 @@ app.use("/api/cycle", cycleRoutes);
 
 //For getting reports 
 app.use("/api/report", reportRoutes);
+
+//For journaling
+app.use("/api/journal", journalRoutes);
 
 
 //for middleware jwt authentication

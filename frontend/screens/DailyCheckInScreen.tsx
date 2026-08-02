@@ -11,6 +11,8 @@ import {
 
 import PhoneFrame from "../components/PhoneFrame";
 import api from "../services/api"
+import BottomNavigation from "../components/BottomNavigation";
+
 
 export default function DailyCheckInScreen() {
   const [isPeriodDay, setIsPeriodDay] = useState(false);
@@ -312,6 +314,7 @@ export default function DailyCheckInScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+      <BottomNavigation />
     </PhoneFrame>
   );
 }

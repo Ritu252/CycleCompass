@@ -7,11 +7,22 @@ import {
   StyleSheet,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/AppNavigator";
+
+
 export default function BottomNavigation() {
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
     <View style={styles.container}>
 
-      <TouchableOpacity style={styles.tab}>
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => navigation.navigate("Dashboard")}
+        >
         <Image
           source={require("../assets/images/home.png")}
           style={styles.icon}
@@ -19,7 +30,10 @@ export default function BottomNavigation() {
         <Text style={styles.activeLabel}>Home</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.tab}>
+      <TouchableOpacity
+      style={styles.tab}
+      onPress={() => navigation.navigate("HealthHistory")}
+      >
         <Image
           source={require("../assets/images/calendar_check.png")}
           style={styles.icon}
@@ -27,14 +41,20 @@ export default function BottomNavigation() {
         <Text style={styles.label}>History</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.centerButton}>
+      <TouchableOpacity
+        style={styles.centerButton}
+        onPress={() => navigation.navigate("DailyCheckIn")}
+        >
         <Image
           source={require("../assets/images/plus.png")}
           style={styles.plusIcon}
         />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.tab}>
+      <TouchableOpacity
+      style={styles.tab}
+      onPress={() => navigation.navigate("Journal")}
+      >
         <Image
           source={require("../assets/images/journal.png")}
           style={styles.icon}
@@ -42,7 +62,10 @@ export default function BottomNavigation() {
         <Text style={styles.label}>Journal</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.tab}>
+      <TouchableOpacity
+      style={styles.tab}
+      onPress={() => navigation.navigate("Profile")}
+      >
         <Image
           source={require("../assets/images/profile.png")}
           style={styles.icon}

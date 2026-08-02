@@ -8,11 +8,12 @@
 // import AppNavigator from "./navigation/AppNavigator";
 
 // export default function App() {
-//   return <AppNavigator />;
+//   return <Dashboard />;
 // }
+// 
+// import DashboardScreen from "./screens/DashboardScreen";
+// import HealthHistoryScreen from "./screens/HealthHistoryScreen";
 
-import Dashboard from "./screens/DashboardScreen";
-
-export default function App() {
-  return <Dashboard />;
-}
+// export default function App() {
+//     return <HealthHistoryScreen />
+// }

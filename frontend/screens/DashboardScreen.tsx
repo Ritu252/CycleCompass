@@ -11,6 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import HealthHistoryScreen from "./HealthHistoryScreen";
 
 export default function DashboardScreen() {
   const [userName, setUserName] = useState("");
@@ -193,7 +194,10 @@ export default function DashboardScreen() {
 
   {/* Health History */}
 
-  <TouchableOpacity style={styles.dashboardCard}>
+  <TouchableOpacity
+    style={styles.dashboardCard}
+    onPress={() => navigation.navigate("HealthHistoryScreen")}
+    >
 
     <Image
   source={require("../assets/images/calendar.png")}
