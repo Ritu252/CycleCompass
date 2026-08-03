@@ -8,10 +8,26 @@ import {
   Image,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
 
 export default function ProfileScreen() {
+  const navigation = useNavigation<any>();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("userId");
+      await AsyncStorage.removeItem("name");
+      await AsyncStorage.removeItem("email");
+      await AsyncStorage.removeItem("onboardingComplete");
+      navigation.replace("Login");
+    } catch (error) {
+      console.log("Logout error:", error);
+    }
+  };
 
   return (
 
@@ -102,7 +118,7 @@ export default function ProfileScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.logoutButton}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>
               🚪 Logout
             </Text>

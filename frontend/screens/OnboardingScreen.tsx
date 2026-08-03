@@ -8,6 +8,9 @@ import {
   ScrollView,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import PhoneFrame from "../components/PhoneFrame";
 import api from "../services/api";
 
@@ -16,37 +19,51 @@ export default function OnboardingScreen() {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [pcos_status, setPcosStatus] = useState("");
+  const navigation = useNavigation<any>();
 
   const handleOnboard = async () => {
-  try {
-    const response = await api.post("/api/onboard/profile:id", {
-      age, 
-      height, 
-      weight, 
-      pcos_status,
-    });
+    try {
+      let userId = await AsyncStorage.getItem("userId");
+      const token = await AsyncStorage.getItem("token");
 
-    alert(response.data.message);
+      if (!userId && token) {
+        const profileResponse = await api.get("/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    console.log("Onboard Success:");
-    console.log(response.data);
+        userId = profileResponse.data.user?.userId?.toString();
+        if (userId) {
+          await AsyncStorage.setItem("userId", userId);
+        }
+      }
 
-    // Optional: clear inputs after successful registration
-    setAge("");
-    setHeight("");
-    setWeight("");
-    setPcosStatus("");
+      if (!userId) {
+        alert("User session not found. Please log in again.");
+        return;
+      }
 
+      const response = await api.put(`/api/onboard/profile/${userId}`, {
+        age: Number(age),
+        height: Number(height),
+        weight: Number(weight),
+        pcos_status,
+      });
+
+      await AsyncStorage.setItem("onboardingComplete", "true");
+      alert(response.data.message);
+      navigation.replace("Dashboard");
+
+      setAge("");
+      setHeight("");
+      setWeight("");
+      setPcosStatus("");
     } catch (error: any) {
-      console.log("Error:");
-      console.log(error);
-
-      alert(
-        error.response?.data?.message ||
-        "Onboard Failed"
-      );
+      console.log("Onboarding Error:", error);
+      alert(error.response?.data?.message || "Onboard Failed");
     }
-};
+  };
 
   return (
     <PhoneFrame>
@@ -54,16 +71,12 @@ export default function OnboardingScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>
-           Tell Us About Yourself
-        </Text>
-
+        <Text style={styles.title}>Tell Us About Yourself</Text>
         <Text style={styles.subtitle}>
           Let's personalize your CycleCompass journey
         </Text>
 
         <Text style={styles.label}>Age</Text>
-
         <TextInput
           style={styles.input}
           placeholder="24"
@@ -73,10 +86,7 @@ export default function OnboardingScreen() {
           onChangeText={setAge}
         />
 
-        <Text style={styles.label}>
-          Height (cm)
-        </Text>
-
+        <Text style={styles.label}>Height (cm)</Text>
         <TextInput
           style={styles.input}
           placeholder="152"
@@ -86,10 +96,7 @@ export default function OnboardingScreen() {
           onChangeText={setHeight}
         />
 
-        <Text style={styles.label}>
-          Weight (kg)
-        </Text>
-
+        <Text style={styles.label}>Weight (kg)</Text>
         <TextInput
           style={styles.input}
           placeholder="49"
@@ -99,56 +106,31 @@ export default function OnboardingScreen() {
           onChangeText={setWeight}
         />
 
-        <Text style={styles.label}>
-          Have you been diagnosed with PCOS/PMOS?
-        </Text>
+        <Text style={styles.label}>Have you been diagnosed with PCOS/PMOS?</Text>
 
         <TouchableOpacity
-          style={[
-            styles.option,
-            pcos_status === "Diagnosed" &&
-              styles.selectedOption,
-          ]}
-          onPress={() =>
-            setPcosStatus("Diagnosed")
-          }
+          style={[styles.option, pcos_status === "Diagnosed" && styles.selectedOption]}
+          onPress={() => setPcosStatus("Diagnosed")}
         >
           <Text>Diagnosed</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.option,
-            pcos_status === "Not Diagnosed" &&
-              styles.selectedOption,
-          ]}
-          onPress={() =>
-            setPcosStatus("Not Diagnosed")
-          }
+          style={[styles.option, pcos_status === "Not Diagnosed" && styles.selectedOption]}
+          onPress={() => setPcosStatus("Not Diagnosed")}
         >
           <Text>Not Diagnosed</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.option,
-            pcos_status === "Not Sure" &&
-              styles.selectedOption,
-          ]}
-          onPress={() =>
-            setPcosStatus("Not Sure")
-          }
+          style={[styles.option, pcos_status === "Not Sure" && styles.selectedOption]}
+          onPress={() => setPcosStatus("Not Sure")}
         >
           <Text>Not Sure</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleOnboard}
-        >
-          <Text style={styles.buttonText}>
-             Continue
-          </Text>
+        <TouchableOpacity style={styles.button} onPress={handleOnboard}>
+          <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </ScrollView>
     </PhoneFrame>

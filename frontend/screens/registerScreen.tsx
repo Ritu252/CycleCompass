@@ -10,147 +10,113 @@ import {
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import PhoneFrame from "../components/PhoneFrame";
 import api from "../services/api";
-import { useNavigation } from "@react-navigation/native";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);  
-
-  const handleRegister = async () => {
-  try {
-    const response = await api.post("/api/auth/register", {
-      name,
-      email,
-      password,
-    });
-
-    setMessage(response.data.message);
-    navigation.navigate("Login");
-    
-    setIsError(false);
-    
-    console.log("Registration Success:");
-    console.log(response.data);
-
-    // Optional: clear inputs after successful registration
-    setName("");
-    setEmail("");
-    setPassword("");
-    } catch (error: any) {
-      console.log("Registration Error:");
-      console.log(error);
-
-      setMessage(
-          error.response?.data?.message ||
-          "Registration Failed"
-          );
-
-          setIsError(true);
-    }
-};
-
+  const [isError, setIsError] = useState(false);
   const navigation = useNavigation<any>();
 
+  const handleRegister = async () => {
+    try {
+      const response = await api.post("/api/auth/register", {
+        name,
+        email,
+        password,
+      });
+
+      await AsyncStorage.setItem("onboardingComplete", "false");
+      setMessage(response.data.message);
+      setIsError(false);
+
+      setName("");
+      setEmail("");
+      setPassword("");
+
+      navigation.navigate("Login");
+    } catch (error: any) {
+      console.log("Registration Error:", error);
+      setMessage(error.response?.data?.message || "Registration Failed");
+      setIsError(true);
+    }
+  };
+
   return (
-    
+    <PhoneFrame>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.phoneFrame}>
+          <View style={styles.card}>
+            <Image
+              source={require("../assets/images/cycle-compass2.png")}
+              style={styles.teddy}
+            />
 
-     <PhoneFrame>
+            <Text style={styles.heading}>Welcome to</Text>
+            <Text style={styles.brand}>CycleCompass</Text>
+            <Text style={styles.subHeading}>
+              Track your cycle, symptoms and wellness journey with love 🌸
+            </Text>
 
+            <TextInput
+              placeholder="Full Name"
+              placeholderTextColor="#B59AA6"
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+            />
 
-    <SafeAreaView style={styles.container}>
-      <View style={styles.phoneFrame}>
-        <View style={styles.card}>
-          <Image
-            source={require("../assets/images/cycle-compass2.png")}
-            style={styles.teddy}
-          />
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#B59AA6"
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+            />
 
-          <Text style={styles.heading}>
-            Welcome to
-          </Text>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#B59AA6"
+              style={styles.input}
+              value={password}
+              secureTextEntry
+              onChangeText={setPassword}
+            />
 
-          <Text style={styles.brand}>
-            CycleCompass
-          </Text>
-
-          <Text style={styles.subHeading}>
-            Track your cycle, symptoms and wellness
-            journey with love 🌸
-          </Text>
-
-          <TextInput
-            placeholder="Full Name"
-            placeholderTextColor="#B59AA6"
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-          />
-
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#B59AA6"
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-          />
-
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="#B59AA6"
-            style={styles.input}
-            value={password}
-            secureTextEntry
-            onChangeText={setPassword}
-          />
-
-          {
-          message ? (
+            {message ? (
               <Text
                 style={[
                   styles.message,
-                  isError
-                    ? styles.errorMessage
-                    : styles.successMessage,
+                  isError ? styles.errorMessage : styles.successMessage,
                 ]}
               >
                 {message}
               </Text>
-            ) : null
-          }
+            ) : null}
 
-          <TouchableOpacity onPress={handleRegister}>
-            <LinearGradient
-              colors={["#FF9BC9", "#FF5EA8"]}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>
-                Create Account 
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={handleRegister}>
+              <LinearGradient
+                colors={["#FF9BC9", "#FF5EA8"]}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Create Account</Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
-          <Text style={styles.footer}>
-            Already have an account?
-
-            <Text
-              style={styles.login}
-              onPress={() => navigation.navigate("Login")}
-            >
-            {" "}Login
-          </Text>
-
-</Text>
-
+            <Text style={styles.footer}>
+              Already have an account?
+              <Text style={styles.login} onPress={() => navigation.navigate("Login")}> Login</Text>
+            </Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
     </PhoneFrame>
   );
 }
@@ -167,13 +133,9 @@ const styles = StyleSheet.create({
     width: 390,
     maxWidth: "95%",
     height: 844,
-
     backgroundColor: "#FFF3F8",
-
     justifyContent: "center",
-
     padding: 20,
-
     borderRadius: 40,
 
     shadowColor: "#000",
@@ -190,9 +152,7 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: "#FFFFFF",
-
     borderRadius: 35,
-
     padding: 28,
 
     shadowColor: "#FFB6D5",
@@ -223,77 +183,55 @@ const styles = StyleSheet.create({
 
   brand: {
     textAlign: "center",
-
     fontSize: 38,
-
     fontWeight: "800",
-
     color: "#FF5EA8",
-
     marginBottom: 10,
   },
 
   subHeading: {
     textAlign: "center",
-
     color: "#967A87",
-
     lineHeight: 22,
-
     marginBottom: 25,
   },
 
   input: {
     backgroundColor: "#FFF7FA",
-
     borderWidth: 1.5,
-
     borderColor: "#FFD7E8",
-
     borderRadius: 22,
-
     paddingHorizontal: 20,
-
     paddingVertical: 16,
-
     fontSize: 16,
-
     marginBottom: 16,
   },
 
   button: {
     borderRadius: 24,
-
     paddingVertical: 18,
-
     alignItems: "center",
-
     marginTop: 10,
   },
 
   buttonText: {
     color: "#FFFFFF",
-
     fontWeight: "700",
-
     fontSize: 18,
   },
 
   footer: {
     textAlign: "center",
-
     marginTop: 25,
-
     color: "#8C6E7B",
   },
 
   login: {
     color: "#FF5EA8",
-
     fontWeight: "700",
   },
 
-    message: {
+  message: {
     textAlign: "center",
     marginBottom: 15,
     fontWeight: "600",

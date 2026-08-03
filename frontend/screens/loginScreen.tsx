@@ -10,122 +10,100 @@ import {
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
-import PhoneFrame from "../components/PhoneFrame";
-import api from "../services/api"
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import PhoneFrame from "../components/PhoneFrame";
+import api from "../services/api";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigation = useNavigation<any>();
 
   const handleLogin = async () => {
-  try {
-    const response = await api.post("/api/auth/login", {
-      email,
-      password,
-    });
+    try {
+      const response = await api.post("/api/auth/login", {
+        email,
+        password,
+      });
 
-    await AsyncStorage.setItem(
-        "token",
-        response.data.token
-    );
+      const token = response.data.token;
+      const user = response.data.user || {};
 
-    await AsyncStorage.setItem(
-        "name",
-        response.data.user.name
-    );
+      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("name", user.name || "");
+      await AsyncStorage.setItem("email", user.email || "");
+      if (user.id) {
+        await AsyncStorage.setItem("userId", user.id.toString());
+      }
+      await AsyncStorage.setItem(
+        "onboardingComplete",
+        user.onboardingComplete ? "true" : "false"
+      );
 
-    await AsyncStorage.setItem(
-        "email",
-        response.data.user.email
-    );
+      setEmail("");
+      setPassword("");
 
-    console.log("Login Success:");
-    console.log(response.data);
+      alert(response.data.message);
 
-    alert(response.data.message);
-
-    // Later we'll save this token using AsyncStorage
-    // const token = response.data.token;
-    // await AsyncStorage.setItem("token", token);
-
-    const token = response.data.token;
-    console.log(token);
-
-    // Clear fields
-    setEmail("");
-    setPassword("");
-
-  } catch (error: any) {
-    console.log("Login Error:");
-    console.log(error);
-
-    alert(
-      error.response?.data?.message ||
-      "Login Failed"
-    );
-  }
-};
+      navigation.replace(user.onboardingComplete ? "Dashboard" : "Onboarding");
+    } catch (error: any) {
+      console.log("Login Error:", error);
+      alert(error.response?.data?.message || "Login Failed");
+    }
+  };
 
   return (
     <PhoneFrame>
-    <SafeAreaView style={styles.container}>
-      <View style={styles.phoneFrame}>
-        <View style={styles.card}>
-          <Image
-            source={require("../assets/images/cycle-compass2.png")}
-            style={styles.teddy}
-          />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.phoneFrame}>
+          <View style={styles.card}>
+            <Image
+              source={require("../assets/images/cycle-compass2.png")}
+              style={styles.teddy}
+            />
 
-          <Text style={styles.heading}>
-            Welcome Back 💕
-          </Text>
+            <Text style={styles.heading}>Welcome Back 💕</Text>
+            <Text style={styles.brand}>CycleCompass</Text>
+            <Text style={styles.subHeading}>
+              Log in and continue your wellness journey
+            </Text>
 
-          <Text style={styles.brand}>
-            CycleCompass
-          </Text>
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#B59AA6"
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+            />
 
-          <Text style={styles.subHeading}>
-            Log in and continue your wellness journey 
-          </Text>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#B59AA6"
+              style={styles.input}
+              value={password}
+              secureTextEntry
+              onChangeText={setPassword}
+            />
 
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#B59AA6"
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-          />
+            <TouchableOpacity onPress={handleLogin}>
+              <LinearGradient
+                colors={["#FF9BC9", "#FF5EA8"]}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Login</Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="#B59AA6"
-            style={styles.input}
-            value={password}
-            secureTextEntry
-            onChangeText={setPassword}
-          />
-
-          <TouchableOpacity onPress={handleLogin}>
-            <LinearGradient
-              colors={["#FF9BC9", "#FF5EA8"]}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>
-                Login
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <Text style={styles.footer}>
-            Don't have an account?
-            <Text style={styles.login}> Register</Text>
-          </Text>
+            <Text style={styles.footer}>
+              Don't have an account?
+              <Text style={styles.login} onPress={() => navigation.navigate("Register")}> Register</Text>
+            </Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
     </PhoneFrame>
   );
 }
