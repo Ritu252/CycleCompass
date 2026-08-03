@@ -24,7 +24,7 @@ export default function BottomNavigation() {
         onPress={() => navigation.navigate("Dashboard")}
         >
         <Image
-          source={require("../assets/images/home.png")}
+          source={require("../assets/images/home.png")}  
           style={styles.icon}
         />
         <Text style={styles.activeLabel}>Home</Text>
