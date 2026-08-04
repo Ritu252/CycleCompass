@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import PhoneFrame from "../components/PhoneFrame";
+import BackButton from "../components/BackButton";
 import api from "../services/api";
 
 export default function ChangePasswordScreen() {
@@ -67,6 +68,7 @@ export default function ChangePasswordScreen() {
     <PhoneFrame>
       <SafeAreaView style={styles.container}>
         <View style={styles.card}>
+          <BackButton />
           <Text style={styles.heading}>Change Password</Text>
           <Text style={styles.subHeading}>
             Update your account password to keep your profile secure.

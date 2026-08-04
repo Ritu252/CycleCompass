@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import PhoneFrame from "../components/PhoneFrame";
+import BackButton from "../components/BackButton";
 import api from "../services/api";
 
 export default function EditProfileScreen() {
@@ -115,6 +116,7 @@ export default function EditProfileScreen() {
     <PhoneFrame>
       <SafeAreaView style={styles.container}>
         <View style={styles.card}>
+          <BackButton />
           <Text style={styles.heading}>Edit Profile</Text>
           <Text style={styles.subHeading}>
             Update your personal information below.

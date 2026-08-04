@@ -13,6 +13,7 @@ import PhoneFrame from "../components/PhoneFrame";
 import api from "../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigation from "../components/BottomNavigation";
+import BackButton from "../components/BackButton";
 
 
 export default function DailyCheckInScreen() {
@@ -118,6 +119,8 @@ export default function DailyCheckInScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        <BackButton />
+
         <Text style={styles.title}>Daily Check-In</Text>
 
         {/* PERIOD SECTION */}

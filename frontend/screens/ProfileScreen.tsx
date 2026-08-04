@@ -12,6 +12,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import BackButton from "../components/BackButton";
 import api from "../services/api";
 
 export default function ProfileScreen() {
@@ -96,6 +97,8 @@ export default function ProfileScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
+
+        <BackButton />
 
         {/* Avatar */}
 

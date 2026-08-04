@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import BackButton from "../components/BackButton";
 import HistoryCard from "../components/HistoryCard";
 import api from "../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -60,6 +61,8 @@ export default function HealthHistoryScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
+
+        <BackButton />
 
         <Text style={styles.title}>
           Health History

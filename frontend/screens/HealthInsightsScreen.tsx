@@ -11,6 +11,7 @@ import Svg, { Line, Polyline, Circle, Text as SvgText } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import BackButton from "../components/BackButton";
 import api from "../services/api";
 
 type WeightPoint = {
@@ -179,6 +180,8 @@ export default function HealthInsightsScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
+        <BackButton />
+
         <Text style={styles.title}>Health Insights</Text>
         <Text style={styles.subtitle}>Your weight trend at a glance</Text>
 

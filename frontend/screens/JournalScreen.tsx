@@ -10,6 +10,7 @@ import {
 
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import BackButton from "../components/BackButton";
 
 export default function JournalScreen() {
   const [title, setTitle] = useState("");
@@ -27,6 +28,8 @@ export default function JournalScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
+
+        <BackButton />
 
         <Text style={styles.heading}>
           📖 My Journal

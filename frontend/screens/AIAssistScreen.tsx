@@ -11,6 +11,7 @@ import {
 
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import BackButton from "../components/BackButton";
 
 export default function AIAssistScreen() {
 
@@ -28,6 +29,8 @@ export default function AIAssistScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
+
+        <BackButton />
 
         <Text style={styles.heading}>
           AI Wellness Assistant
