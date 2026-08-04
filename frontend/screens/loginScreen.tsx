@@ -42,12 +42,15 @@ export default function LoginScreen() {
         user.onboardingComplete ? "true" : "false"
       );
 
+      const pendingOnboarding = await AsyncStorage.getItem("pendingOnboarding");
       setEmail("");
       setPassword("");
 
       alert(response.data.message);
 
-      navigation.replace(user.onboardingComplete ? "Dashboard" : "Onboarding");
+      navigation.replace(
+        pendingOnboarding === "true" ? "Onboarding" : "Dashboard"
+      );
     } catch (error: any) {
       console.log("Login Error:", error);
       alert(error.response?.data?.message || "Login Failed");

@@ -52,6 +52,7 @@ export default function OnboardingScreen() {
       });
 
       await AsyncStorage.setItem("onboardingComplete", "true");
+      await AsyncStorage.setItem("pendingOnboarding", "false");
       alert(response.data.message);
       navigation.replace("Dashboard");
 

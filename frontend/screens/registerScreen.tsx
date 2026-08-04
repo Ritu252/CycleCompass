@@ -32,7 +32,7 @@ export default function RegisterScreen() {
         password,
       });
 
-      await AsyncStorage.setItem("onboardingComplete", "false");
+      await AsyncStorage.setItem("pendingOnboarding", "true");
       setMessage(response.data.message);
       setIsError(false);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,20 @@ import BottomNavigation from "../components/BottomNavigation";
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
+  const [userName, setUserName] = useState("CycleCompass User");
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const storedName = await AsyncStorage.getItem("name");
+      const storedEmail = await AsyncStorage.getItem("email");
+
+      if (storedName) setUserName(storedName);
+      if (storedEmail) setUserEmail(storedEmail);
+    };
+
+    loadProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -46,13 +60,9 @@ export default function ProfileScreen() {
             <Text style={styles.avatarText}>👩</Text>
           </View>
 
-          <Text style={styles.name}>
-            Ritu Rani
-          </Text>
+          <Text style={styles.name}>{userName}</Text>
 
-          <Text style={styles.email}>
-            riturani@gmail.com
-          </Text>
+          <Text style={styles.email}>{userEmail}</Text>
 
         </View>
 
@@ -100,7 +110,10 @@ export default function ProfileScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option}>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate("ChangePassword")}
+          >
             <Text style={styles.optionText}>
               🔒 Change Password
             </Text>

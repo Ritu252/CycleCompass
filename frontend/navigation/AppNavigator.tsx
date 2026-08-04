@@ -12,6 +12,7 @@ import OnboardingScreen from "../screens/OnboardingScreen";
 import DashboardScreen from "../screens/DashboardScreen";
 import DailyCheckInScreen from "../screens/DailyCheckInScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import ChangePasswordScreen from "../screens/ChangePasswordScreen";
 import AIAssistScreen from "../screens/AIAssistScreen";
 import JournalScreen from "../screens/JournalScreen";
 import HealthHistoryScreen from "../screens/HealthHistoryScreen";
@@ -25,6 +26,7 @@ export type RootStackParamList = {
   Dashboard: undefined;
   DailyCheckIn: undefined;
   Profile: undefined;
+  ChangePassword: undefined;
   AiAssist: undefined;
   HealthHistory: undefined;
   Journal: undefined;
@@ -38,11 +40,11 @@ function AppStartScreen() {
     const bootstrap = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const onboardingComplete = await AsyncStorage.getItem("onboardingComplete");
+        const pendingOnboarding = await AsyncStorage.getItem("pendingOnboarding");
 
         if (token) {
           navigation.replace(
-            onboardingComplete === "true" ? "Dashboard" : "Onboarding"
+            pendingOnboarding === "true" ? "Onboarding" : "Dashboard"
           );
         } else {
           navigation.replace("Register");
@@ -77,6 +79,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="DailyCheckIn" component={DailyCheckInScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen name="AiAssist" component={AIAssistScreen} />
         <Stack.Screen name="HealthHistory" component={HealthHistoryScreen} />
         <Stack.Screen name="Journal" component={JournalScreen} />
