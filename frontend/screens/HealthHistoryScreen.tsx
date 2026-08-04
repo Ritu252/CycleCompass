@@ -7,11 +7,52 @@ import {
   TextInput,
 } from "react-native";
 
+import { useEffect, useState } from "react";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
 import HistoryCard from "../components/HistoryCard";
+import api from "../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HealthHistoryScreen() {
+  const [history, setHistory] = useState<any[]>([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await api.get("/api/history", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setHistory(response.data.history || []);
+      } catch (error) {
+        console.log("Health history load error:", error);
+      }
+    };
+
+    loadHistory();
+  }, []);
+  const filteredHistory = history;
+
+  // const filteredHistory = history.filter((item) => {
+  //   const text = search.toLowerCase();
+  //   return (
+  //     item.date.toLowerCase().includes(text) ||
+  //     item.cycle.toLowerCase().includes(text) ||
+  //     item.flow.toLowerCase().includes(text) ||
+  //     item.mood.toLowerCase().includes(text) ||
+  //     item.energy.toLowerCase().includes(text) ||
+  //     item.symptoms.join(" ").toLowerCase().includes(text) ||
+  //     item.notes.toLowerCase().includes(text)
+  //   );
+  // });
+
   return (
     <PhoneFrame>
       <ScrollView
@@ -25,7 +66,7 @@ export default function HealthHistoryScreen() {
         </Text>
 
         <Text style={styles.subtitle}>
-          Track your wellness journey 
+          Track your wellness journey
         </Text>
 
         {/* Search Bar */}
@@ -34,46 +75,27 @@ export default function HealthHistoryScreen() {
           placeholder="Search by date, symptom..."
           placeholderTextColor="#999"
           style={styles.searchBar}
+          value={search}
+          onChangeText={setSearch}
         />
 
         {/* History Cards */}
 
-        <HistoryCard
-  date="17 Jul 2026"
-  cycle="10 Jul → 15 Jul"
-  duration="6 Days"
-  flow="Medium"
-  mood="Happy"
-  energy="Normal"
-  symptoms={["Acne", "Bloating", "Cravings"]}
-  notes="Feeling energetic today."
-/>
-
-<HistoryCard
-  date="16 Jul 2026"
-  cycle="10 Jul → 15 Jul"
-  duration="6 Days"
-  flow="Heavy"
-  mood="Low"
-  energy="Low"
-  symptoms={["Hair Fall", "Acne"]}
-  notes="Experienced cramps in the evening."
-/>
-
-<HistoryCard
-  date="15 Jul 2026"
-  cycle="10 Jul → 15 Jul"
-  duration="6 Days"
-  flow="Light"
-  mood="Happy"
-  energy="High"
-  symptoms={[]}
-  notes=""
-/>
-
+        {filteredHistory.map((item) => (
+          <HistoryCard
+            key={item.date}
+            date={item.date}
+            cycle={item.cycle}
+            duration={item.duration}
+            flow={item.flow}
+            mood={item.mood}
+            energy={item.energy}
+            symptoms={item.symptoms}
+            notes={item.notes}
+          />
+        ))}
 
         <View style={{ height: 100 }} />
-
       </ScrollView>
 
       <BottomNavigation />

@@ -11,6 +11,7 @@ const reportRoutes = require("./routes/reportRoutes");
 const onboardRoutes = require("./routes/onboardRoutes");
 const journalRoutes = require("./routes/journalRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const historyRoutes = require("./routes/historyRoutes");
 
 const app = express();
 
@@ -40,6 +41,9 @@ app.use("/api/journal", journalRoutes);
 
 //Dashboard summary
 app.use("/api/dashboard", dashboardRoutes);
+
+//Health history
+app.use("/api/history", historyRoutes);
 
 //for middleware jwt authentication
 app.get("/api/profile", authMiddleware, (req,res)=>{
