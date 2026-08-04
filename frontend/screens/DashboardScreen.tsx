@@ -165,6 +165,24 @@ export default function DashboardScreen() {
 
         <TouchableOpacity
           style={styles.reportCard}
+          onPress={() => navigation.navigate("HealthInsights")}
+        >
+          <View style={styles.reportLeft}>
+            <Text style={styles.insightsIcon}>📊</Text>
+
+            <View>
+              <Text style={styles.reportTitle}>Health Insights</Text>
+              <Text style={styles.reportSubtitle}>
+                See your weight trends over time
+              </Text>
+            </View>
+          </View>
+
+          <Text style={styles.reportArrow}>→</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.reportCard}
           onPress={() => navigation.navigate("Report")}
         >
           <View style={styles.reportLeft}>
@@ -419,6 +437,11 @@ const styles = StyleSheet.create({
     height: 30,
     marginRight: 12,
     resizeMode: "contain",
+  },
+
+  insightsIcon: {
+    fontSize: 26,
+    marginRight: 12,
   },
 
   reportTitle: {
