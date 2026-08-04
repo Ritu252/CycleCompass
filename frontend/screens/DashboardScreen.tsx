@@ -13,18 +13,48 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import api from "../services/api";
 
 export default function DashboardScreen() {
   const [userName, setUserName] = useState("");
+  const [currentCycle, setCurrentCycle] = useState({
+    day: "Not tracked",
+    flow: "No data",
+    lastLogged: null as string | null,
+  });
+  const [streak, setStreak] = useState({
+    days: 0,
+    message: "Start your streak today",
+  });
   const navigation = useNavigation<any>();
 
   useEffect(() => {
-    const loadUserName = async () => {
+    const loadDashboardData = async () => {
       const storedName = await AsyncStorage.getItem("name");
       setUserName(storedName || "Ritu");
+
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await api.get("/api/dashboard/summary", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data?.currentCycle) {
+          setCurrentCycle(response.data.currentCycle);
+        }
+        if (response.data?.streak) {
+          setStreak(response.data.streak);
+        }
+      } catch (error) {
+        console.log("Dashboard summary error:", error);
+      }
     };
 
-    loadUserName();
+    loadDashboardData();
   }, []);
 
   return (
@@ -43,14 +73,12 @@ export default function DashboardScreen() {
 
         <View style={styles.welcomeCard}>
           <View style={styles.leftSection}>
-            <Text style={styles.goodMorning}>Good Morning</Text>
+            <Text style={styles.goodMorning}>🌸 Welcome back</Text>
             <Text style={styles.userName}>{userName || "Ritu"}</Text>
+            <Text style={styles.welcomeMessage}>
+              You’re doing great — let’s make today feel a little lighter and more balanced.
+            </Text>
           </View>
-
-          <Image
-            source={require("../assets/images/welcome_girl.png")}
-            style={styles.girlImage}
-          />
         </View>
 
         <View style={styles.doubleCardRow}>
@@ -65,9 +93,11 @@ export default function DashboardScreen() {
 
             <View style={styles.cardContent}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.bigPinkText}>Day 12</Text>
-                <Text style={styles.infoText}>🩸 Flow: Medium</Text>
-                <Text style={styles.infoText}>📅 Next Period: 6 days</Text>
+                <Text style={styles.bigPinkText}>{currentCycle.day}</Text>
+                <Text style={styles.infoText}>🩸 Flow: {currentCycle.flow}</Text>
+                <Text style={styles.infoText}>
+                  📅 Last logged: {currentCycle.lastLogged || "No record"}
+                </Text>
               </View>
             </View>
           </View>
@@ -80,8 +110,8 @@ export default function DashboardScreen() {
 
             <View style={styles.cardContent}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.bigPinkText}>7 Days</Text>
-                <Text style={styles.infoText}>🏆 You're doing amazing!</Text>
+                <Text style={styles.bigPinkText}>{streak.days} Days</Text>
+                <Text style={styles.infoText}>🏆 {streak.message}</Text>
               </View>
             </View>
           </View>
@@ -218,10 +248,12 @@ const styles = StyleSheet.create({
     color: "#3A2C34",
   },
 
-  girlImage: {
-    width: 90,
-    height: 90,
-    resizeMode: "contain",
+  welcomeMessage: {
+    color: "#8B5E6D",
+    fontSize: 13,
+    lineHeight: 20,
+    marginTop: 8,
+    maxWidth: 280,
   },
 
   doubleCardRow: {

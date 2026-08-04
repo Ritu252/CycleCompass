@@ -8,27 +8,72 @@ import {
   Image,
 } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhoneFrame from "../components/PhoneFrame";
 import BottomNavigation from "../components/BottomNavigation";
+import api from "../services/api";
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
   const [userName, setUserName] = useState("CycleCompass User");
   const [userEmail, setUserEmail] = useState("");
+  const [profileData, setProfileData] = useState({
+    age: "",
+    height: "",
+    weight: "",
+    condition: "",
+  });
 
-  useEffect(() => {
-    const loadProfile = async () => {
+  const loadProfile = async () => {
+    try {
       const storedName = await AsyncStorage.getItem("name");
       const storedEmail = await AsyncStorage.getItem("email");
+      const storedProfile = await AsyncStorage.getItem("profileData");
 
       if (storedName) setUserName(storedName);
       if (storedEmail) setUserEmail(storedEmail);
-    };
 
+      const token = await AsyncStorage.getItem("token");
+
+      if (token) {
+        const response = await api.get("/api/onboard/profile/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const nextProfile = response.data?.profile || {};
+        const formattedProfile = {
+          age: nextProfile.age != null ? String(nextProfile.age) : "",
+          height: nextProfile.height != null ? String(nextProfile.height) : "",
+          weight: nextProfile.weight != null ? String(nextProfile.weight) : "",
+          condition: nextProfile.condition || "",
+        };
+
+        setProfileData(formattedProfile);
+        await AsyncStorage.setItem("profileData", JSON.stringify(formattedProfile));
+      } else if (storedProfile) {
+        setProfileData(JSON.parse(storedProfile));
+      }
+    } catch (error) {
+      console.log("Load profile error:", error);
+      const storedProfile = await AsyncStorage.getItem("profileData");
+      if (storedProfile) {
+        setProfileData(JSON.parse(storedProfile));
+      }
+    }
+  };
+
+  useEffect(() => {
     loadProfile();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfile();
+    }, [])
+  );
 
   const handleLogout = async () => {
     try {
@@ -76,22 +121,22 @@ export default function ProfileScreen() {
 
           <View style={styles.row}>
             <Text style={styles.label}>Age</Text>
-            <Text style={styles.value}>24 Years</Text>
+            <Text style={styles.value}>{profileData.age ? `${profileData.age} Years` : "Not set"}</Text>
           </View>
 
           <View style={styles.row}>
             <Text style={styles.label}>Height</Text>
-            <Text style={styles.value}>5'0"</Text>
+            <Text style={styles.value}>{profileData.height || "Not set"}</Text>
           </View>
 
           <View style={styles.row}>
             <Text style={styles.label}>Weight</Text>
-            <Text style={styles.value}>49 kg</Text>
+            <Text style={styles.value}>{profileData.weight ? `${profileData.weight} kg` : "Not set"}</Text>
           </View>
 
           <View style={styles.row}>
             <Text style={styles.label}>Condition</Text>
-            <Text style={styles.value}>PCOS</Text>
+            <Text style={styles.value}>{profileData.condition || "Not set"}</Text>
           </View>
 
         </View>
@@ -104,7 +149,8 @@ export default function ProfileScreen() {
             ⚙️ Account
           </Text>
 
-          <TouchableOpacity style={styles.option}>
+          <TouchableOpacity style={styles.option}
+          onPress={()=> navigation.navigate("EditProfile")}>
             <Text style={styles.optionText}>
               ✏️ Edit Profile
             </Text>

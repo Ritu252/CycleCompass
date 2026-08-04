@@ -10,7 +10,8 @@ import {
 } from "react-native";
 
 import PhoneFrame from "../components/PhoneFrame";
-import api from "../services/api"
+import api from "../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigation from "../components/BottomNavigation";
 
 
@@ -42,25 +43,38 @@ export default function DailyCheckInScreen() {
 
   const handleDailyCheckIn = async () => {
   try {
+    const token = await AsyncStorage.getItem("token");
+    const headers = token
+      ? { Authorization: `Bearer ${token}` }
+      : {};
+
     // Save Cycle Data
-    const cycleResponse = await api.post("/api/cycle", {
-      is_period_day: isPeriodDay,
-      period_day: isPeriodDay ? Number(periodDay) : null,
-      flow: isPeriodDay ? flow : null,
-    });
+    const cycleResponse = await api.post(
+      "/api/cycle",
+      {
+        is_period_day: isPeriodDay,
+        period_day: isPeriodDay ? Number(periodDay) : null,
+        flow: isPeriodDay ? flow : null,
+      },
+      { headers }
+    );
 
     // Save Symptoms Data
-    const symptomResponse = await api.post("api/symptoms", {
-      acne: symptoms.acne,
-      hair_fall: symptoms.hairFall,
-      bloating: symptoms.bloating,
-      facial_hair_growth: symptoms.facialHairGrowth,
-      cravings: symptoms.cravings,
-      mood,
-      energy_level: energyLevel,
-      weight: weight ? Number(weight) : null,
-      notes,
-    });
+    const symptomResponse = await api.post(
+      "/api/symptoms",
+      {
+        acne: symptoms.acne,
+        hair_fall: symptoms.hairFall,
+        bloating: symptoms.bloating,
+        facial_hair_growth: symptoms.facialHairGrowth,
+        cravings: symptoms.cravings,
+        mood,
+        energy_level: energyLevel,
+        weight: weight ? Number(weight) : null,
+        notes,
+      },
+      { headers }
+    );
 
     console.log(cycleResponse.data);
     console.log(symptomResponse.data);

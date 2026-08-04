@@ -17,6 +17,7 @@ import AIAssistScreen from "../screens/AIAssistScreen";
 import JournalScreen from "../screens/JournalScreen";
 import HealthHistoryScreen from "../screens/HealthHistoryScreen";
 import GenerateReportScreen from "../screens/GenerateReportScreen";
+import EditProfileScreen from "../screens/EditProfileScreen";
 
 export type RootStackParamList = {
   AppStart: undefined;
@@ -26,6 +27,7 @@ export type RootStackParamList = {
   Dashboard: undefined;
   DailyCheckIn: undefined;
   Profile: undefined;
+  EditProfile: undefined;
   ChangePassword: undefined;
   AiAssist: undefined;
   HealthHistory: undefined;
@@ -79,6 +81,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="DailyCheckIn" component={DailyCheckInScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen name="AiAssist" component={AIAssistScreen} />
         <Stack.Screen name="HealthHistory" component={HealthHistoryScreen} />
