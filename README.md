@@ -80,6 +80,8 @@ DB_HOST=localhost
 DB_USER=your_mysql_user
 DB_PASSWORD=your_mysql_password
 DB_NAME=cyclecompass
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_DAILY_REQUEST_CAP=200
 ```
 
 Make sure MySQL is running and the database contains the required tables (`users`, `cycles`, `symptoms`, `journal_entries`).
@@ -148,6 +150,11 @@ All protected routes require an `Authorization: Bearer <token>` header.
 | Method | Endpoint       | Auth | Description                          |
 |--------|----------------|------|-------------------------------------|
 | GET    | `/api/report`  | ✅   | Get combined cycles + symptoms data |
+
+### Insights
+| Method | Endpoint        | Auth | Description                                                              |
+|--------|-----------------|------|---------------------------------------------------------------------------|
+| GET    | `/api/insights` | ✅   | Summarize the last 90 days of cycle/symptom data and get an AI-generated health insight (via Gemini's free tier). Requires `GEMINI_API_KEY` in the backend `.env`. Limited to 3 requests/user/day and a shared `GEMINI_DAILY_REQUEST_CAP` (default 200) across all users, since the free tier's rate limit is a shared project-wide pool. Note: on Gemini's free tier, submitted data may be used by Google to improve their products — free-text journal/symptom notes are deliberately excluded from what's sent. |
 
 ---
 

@@ -136,14 +136,13 @@ export default function HealthInsightsScreen() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    const loadInsights = async () => {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+  const [aiInsight, setAiInsight] = useState<string | null>(null);
+  const [aiInsightLoading, setAiInsightLoading] = useState(true);
+  const [aiInsightMessage, setAiInsightMessage] = useState("");
+  const [aiInsightError, setAiInsightError] = useState("");
 
+  useEffect(() => {
+    const loadWeightData = async (token: string) => {
       try {
         const response = await api.get("/api/report", {
           headers: {
@@ -171,7 +170,39 @@ export default function HealthInsightsScreen() {
       }
     };
 
-    loadInsights();
+    const loadAiInsight = async (token: string) => {
+      try {
+        const response = await api.get("/api/insights", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setAiInsight(response.data?.insight || null);
+        setAiInsightMessage(response.data?.message || "");
+      } catch (error: any) {
+        console.log("AI insight load error:", error);
+        setAiInsightError(
+          error.response?.data?.message ||
+            "Couldn't generate an AI insight right now."
+        );
+      } finally {
+        setAiInsightLoading(false);
+      }
+    };
+
+    const loadAll = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        setAiInsightLoading(false);
+        return;
+      }
+
+      await Promise.all([loadWeightData(token), loadAiInsight(token)]);
+    };
+
+    loadAll();
   }, []);
 
   return (
@@ -184,6 +215,24 @@ export default function HealthInsightsScreen() {
 
         <Text style={styles.title}>Health Insights</Text>
         <Text style={styles.subtitle}>Your weight trend at a glance</Text>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>🤖 AI Health Insight</Text>
+
+          {aiInsightLoading && <ActivityIndicator color="#EF4F8F" />}
+
+          {!aiInsightLoading && aiInsightError !== "" && (
+            <Text style={styles.stateText}>{aiInsightError}</Text>
+          )}
+
+          {!aiInsightLoading && aiInsightError === "" && aiInsightMessage !== "" && (
+            <Text style={styles.stateText}>{aiInsightMessage}</Text>
+          )}
+
+          {!aiInsightLoading && aiInsightError === "" && aiInsight && (
+            <Text style={styles.insightText}>{aiInsight}</Text>
+          )}
+        </View>
 
         {loading && (
           <View style={styles.stateBox}>
@@ -270,6 +319,12 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     lineHeight: 20,
+  },
+
+  insightText: {
+    fontSize: 14,
+    color: "#333",
+    lineHeight: 21,
   },
 
   card: {

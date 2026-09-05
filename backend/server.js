@@ -12,6 +12,7 @@ const onboardRoutes = require("./routes/onboardRoutes");
 const journalRoutes = require("./routes/journalRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const insightsRoutes = require("./routes/insightsRoutes");
 
 const app = express();
 
@@ -44,6 +45,9 @@ app.use("/api/dashboard", dashboardRoutes);
 
 //Health history
 app.use("/api/history", historyRoutes);
+
+//AI-generated health insights (Gemini)
+app.use("/api/insights", insightsRoutes);
 
 //for middleware jwt authentication
 app.get("/api/profile", authMiddleware, (req,res)=>{
