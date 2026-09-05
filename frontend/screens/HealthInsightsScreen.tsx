@@ -177,11 +177,21 @@ export default function HealthInsightsScreen() {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log("Gemini response Frontend" + response);
 
         setAiInsight(response.data?.insight || null);
         setAiInsightMessage(response.data?.message || "");
       } catch (error: any) {
         console.log("AI insight load error:", error);
+
+        if (error.response?.status === 401) {
+          await AsyncStorage.removeItem("token");
+          setAiInsightError(
+            "Your session expired. Please sign in again to use AI insights."
+          );
+          return;
+        }
+
         setAiInsightError(
           error.response?.data?.message ||
             "Couldn't generate an AI insight right now."

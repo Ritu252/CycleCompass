@@ -1,7 +1,7 @@
 const db = require("../config/db");
 
 const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent";
 const LOOKBACK_DAYS = 90;
 
 const SYSTEM_PROMPT =
@@ -53,6 +53,8 @@ const buildSummary = (cycles, symptoms, rangeStart, rangeEnd) => {
 };
 
 const requestGeminiInsight = async (summary) => {
+  const prompt = `${SYSTEM_PROMPT}\n\nHere is the user's recent health summary:\n${JSON.stringify(summary)}`;
+
   const response = await fetch(GEMINI_URL, {
     method: "POST",
     headers: {
@@ -60,14 +62,24 @@ const requestGeminiInsight = async (summary) => {
       "X-goog-api-key": process.env.GEMINI_API_KEY,
     },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: [{ parts: [{ text: JSON.stringify(summary) }] }],
-      generationConfig: { temperature: 0.5 },
+      contents: [
+        {
+          parts: [{ text: prompt }],
+        },
+      ],
+      generationConfig: {
+        thinkingConfig: {
+          thinkingLevel: "minimal",
+        },
+      },
     }),
   });
 
+  console.log("GEMINI RESPONSE BACKEND", response);
+
   if (!response.ok) {
     const errorText = await response.text();
+    console.error("Gemini API error body:", errorText);
     throw new Error(
       `Gemini API request failed with status ${response.status}: ${errorText}`
     );
